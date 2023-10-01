@@ -1,0 +1,740 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="《Colorization using Optimization》复现报告简介论文Colorization using Optimization来自于Siggraph2004，论文旨在通过简单的交互实现灰度图的全局彩色化。 相关工作简介[Markle and Hunt 1987]提出了一个在至少一个参考帧手动绘制颜色遮罩，然后用运动检测和跟踪将颜色自动分配给没有运动发生的区域的其他帧的方法。 [W">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Amulopapa&#39;s Blog">
+<meta property="og:url" content="http://example.com/2023/09/30/%E3%80%8AColorization%20using%20Optimization%E3%80%8B%E5%A4%8D%E7%8E%B0%E6%8A%A5%E5%91%8A%200e050e35c74b4077a7eddde14c8b084a/index.html">
+<meta property="og:site_name" content="Amulopapa&#39;s Blog">
+<meta property="og:description" content="《Colorization using Optimization》复现报告简介论文Colorization using Optimization来自于Siggraph2004，论文旨在通过简单的交互实现灰度图的全局彩色化。 相关工作简介[Markle and Hunt 1987]提出了一个在至少一个参考帧手动绘制颜色遮罩，然后用运动检测和跟踪将颜色自动分配给没有运动发生的区域的其他帧的方法。 [W">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.imgs.ovh/2023/09/16/FREO.png">
+<meta property="article:published_time" content="2023-09-30T08:23:13.357Z">
+<meta property="article:modified_time" content="2023-09-30T00:23:06.000Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.imgs.ovh/2023/09/16/FREO.png">
+  
+  
+  
+  <title>Amulopapa&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"8fTNb4BJNUwCRQnDhgONNVFn-9Nh9j0Va","app_key":"SSb6s5MIy7RoF7MAR6MGkKUB","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Amulopapa</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text=""></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-30 16:23" pubdate>
+          2023年9月30日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          57 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span>次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header"></h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="《Colorization-using-Optimization》复现报告"><a href="#《Colorization-using-Optimization》复现报告" class="headerlink" title="《Colorization using Optimization》复现报告"></a>《Colorization using Optimization》复现报告</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>论文Colorization using Optimization来自于Siggraph2004，论文旨在通过简单的交互实现灰度图的全局彩色化。</p>
+<h2 id="相关工作"><a href="#相关工作" class="headerlink" title="相关工作"></a>相关工作</h2><h3 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h3><p>[Markle and Hunt 1987]提出了一个在至少一个参考帧手动绘制颜色遮罩，然后用运动检测和跟踪将颜色自动分配给没有运动发生的区域的其他帧的方法。</p>
+<p>[Welsh etal. 2002]描述了一种通过参考彩色图像转移颜色来给灰度图着色的技术。他们检测待着色图像每个像素周边的像素亮度值，并与参考图像做比对。在参考图像种选择具有相似领域的颜色传输给待着色像素。</p>
+<h3 id="局限性"><a href="#局限性" class="headerlink" title="局限性"></a>局限性</h3><p>[Markle and Hunt 1987]的方法需要艺术家大量的时间去人工划分区域和跨图像追踪。尽快后面出现了自动分割的算法，不过已存在的自动分割方法常常难以处理复杂模糊的边界，也导致这个方法的着色会不准确。</p>
+<p>[Welsh etal. 2002]的这种技术也有着一定的问题。它使得艺术家没有办法去直接选择上色的方案。艺术家必须要找到与待着色区域相似纹理的且颜色是自己希望的参考，这导致艺术家无法控制自己的着色结果。同时这种技术没有考虑颜色在空间上的连续性，有可能会出现很大的颜色跳跃。</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="预备知识"><a href="#预备知识" class="headerlink" title="预备知识"></a>预备知识</h3><p>YUV颜色空间：不同于RGB的三个通道都是颜色通道。YUV是一种把亮度信息（Y）和颜色信息（U,V）分离的格式。没有UV的时候也可以正常显示图像，Y就是一个灰度图。</p>
+<p>转换方式如下：</p>
+<p>$$<br>\begin{bmatrix} Y\U \V\end{bmatrix}&#x3D;\begin{bmatrix}  0.299&amp;0.587  &amp;0.114 \  -0.169&amp;-0.331  &amp;0.5 \  0.5&amp;-0.419  &amp;-0.081\end{bmatrix}\begin{bmatrix} R\G \B\end{bmatrix}+\begin{bmatrix}0 \128 \128\end{bmatrix}<br>$$</p>
+<h3 id="算法原理"><a href="#算法原理" class="headerlink" title="算法原理"></a>算法原理</h3><p>本文的算法基于一个简单的前提：在时间和空间上的相邻且具有相似灰度等级的像素也会具有相同颜色。即如果像素r与他的相邻像素s在亮度上相似，就会具有相似的颜色。</p>
+<p>所以我们可以将其转化为一个最优化问题，即使以下J(U)最小化（V通道同理）</p>
+<p>$$<br>J(U)&#x3D;\sum_{r}^{} (U(r)-\sum_{s\in N(r)}^{}w_{rs} U(s)  )^{2} <br>$$</p>
+<p>其中Wrs是一个权重参数，用于体现强度的相似性，计算的公式如下：</p>
+<p>$$<br>W_{rs} \propto exp(\frac{-(Y(r)-Y(s))^{2} }{2\sigma _{r}^{2} } )<br>$$</p>
+<p>PS:还要注意每个像素r的周围像素权重和需为1。</p>
+<h2 id="复现思路"><a href="#复现思路" class="headerlink" title="复现思路"></a>复现思路</h2><p>优化问题一般都可以转化为求解具有闭式最小二乘解的线性方程组，对于这个方法来说最重要求解的线性方程Ax&#x3D;b，A是一个关于w的矩阵，而b是一个U&#x2F;V加权的结果。</p>
+<p>具体来说要使(U)最小化，就要在每个像素上满足：</p>
+<p>$$<br>U(r)-\sum_{s\in N(r)}^{}w_{rs} U(s) &#x3D; 0<br>$$</p>
+<p>对于所有未知像素都根据这个约束列一个线性方程，然后将所有已知量移至等式右侧，左侧只有权重和未知的像素值。对于所有已知像素直接将像素值填充到b的对应位置。</p>
+<p>$$<br>\begin{pmatrix}  1&amp;  0&amp; 0 &amp;0  &amp; 0 &amp;0 \  0&amp; 1 &amp; -w_{23}  &amp;-w_{24}   &amp; 0 &amp;-w_{26}  \  0&amp; -w_{32}  &amp;  1&amp; 0 &amp; 0 &amp; -w_{26} \  0&amp;  -w_{42} &amp;  0&amp; 1 &amp; 0 &amp; 0\  0&amp; 0 &amp;  0&amp;  0&amp; 1 &amp;0 \  0&amp; -w_{62}  &amp;-w_{63}   &amp;  0&amp;  0&amp;1\end{pmatrix}\begin{pmatrix}  x_{1}\ x_{2} \ x_{3} \ x_{4} \ x_{5} \ x_{6}\end{pmatrix}&#x3D;\begin{pmatrix} u_{1} \  w_{21} u_{1}+ w_{25} u_{5}\ w_{35} u_{5}\ w_{41} u_{1}+w_{45} u_{5}\u_{5}\w_{65} u_{5}\end{pmatrix}<br>$$</p>
+<h2 id="复现代码"><a href="#复现代码" class="headerlink" title="复现代码"></a>复现代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br><span class="hljs-keyword">from</span> scipy <span class="hljs-keyword">import</span> sparse<br><span class="hljs-keyword">from</span> typing <span class="hljs-keyword">import</span> <span class="hljs-type">Tuple</span><br><span class="hljs-keyword">from</span> matplotlib <span class="hljs-keyword">import</span> pyplot <span class="hljs-keyword">as</span> plt<br><span class="hljs-keyword">from</span> scipy.sparse.linalg <span class="hljs-keyword">import</span> spsolve<br><span class="hljs-keyword">from</span> time <span class="hljs-keyword">import</span> time<br><br><span class="hljs-comment"># from .utils import position_to_id, find_neighbour</span><br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Colorizer</span>:<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, gray_image_file: <span class="hljs-built_in">str</span>, visual_clues_file: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-literal">None</span>:<br>        <span class="hljs-comment"># opencv读取的默认的格式是bgr的顺序</span><br>        self.original_gray_image = self.gray_image = cv2.cvtColor(cv2.imread(gray_image_file), cv2.COLOR_BGR2RGB)<br>        self.original_visual_clues = self.visual_clues = cv2.cvtColor(cv2.imread(visual_clues_file), cv2.COLOR_BGR2RGB)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">_preprocess</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-comment"># 转换成yuv颜色通道</span><br>        <span class="hljs-comment"># /255.0 是为了进行归一化操作</span><br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">            归一化是在图像处理中的一种常用操作，将像素值缩放到0至1的范围</span><br><span class="hljs-string">            可以确保不同图像的数值范围一致，也可以在深度学习中更好地学习图像特征</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        self.gray_image = cv2.cvtColor(<br>            self.gray_image, cv2.COLOR_RGB2YUV) / <span class="hljs-number">255.0</span><br>        self.visual_clues = cv2.cvtColor(<br>            self.visual_clues, cv2.COLOR_RGB2YUV) / <span class="hljs-number">255.0</span><br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">plot_inputs</span>(<span class="hljs-params">self, figure_size: <span class="hljs-type">Tuple</span>[<span class="hljs-built_in">int</span>, <span class="hljs-built_in">int</span>] = (<span class="hljs-params"><span class="hljs-number">12</span>, <span class="hljs-number">12</span></span>)</span>) -&gt; <span class="hljs-literal">None</span>:<br>        <span class="hljs-comment"># 通过matplotlib这个库，可视化输入的两张图像</span><br>        figure = plt.figure(figsize=figure_size)<br>        figure.add_subplot(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>).set_title(<span class="hljs-string">&#x27;Black &amp; White&#x27;</span>)<br>        plt.imshow(self.original_gray_image)<br>        plt.axis(<span class="hljs-string">&#x27;off&#x27;</span>)<br>        figure.add_subplot(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">2</span>).set_title(<span class="hljs-string">&#x27;Color Hints&#x27;</span>)<br>        plt.imshow(self.original_visual_clues)<br>        plt.axis(<span class="hljs-string">&#x27;off&#x27;</span>)<br>        plt.show()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">plot_results</span>(<span class="hljs-params">self, result: np.ndarray</span>) -&gt; <span class="hljs-literal">None</span>:<br>        <span class="hljs-comment"># 可视化最终上色结果</span><br>        fig = plt.figure(figsize=(<span class="hljs-number">25</span>, <span class="hljs-number">17</span>))<br>        fig.add_subplot(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>, <span class="hljs-number">1</span>).set_title(<span class="hljs-string">&#x27;Black &amp; White&#x27;</span>)<br>        plt.imshow(self.original_gray_image)<br>        plt.axis(<span class="hljs-string">&#x27;off&#x27;</span>)<br>        fig.add_subplot(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>).set_title(<span class="hljs-string">&#x27;Color Hints&#x27;</span>)<br>        plt.imshow(self.original_visual_clues)<br>        plt.axis(<span class="hljs-string">&#x27;off&#x27;</span>)<br>        fig.add_subplot(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>, <span class="hljs-number">3</span>).set_title(<span class="hljs-string">&#x27;Colorized&#x27;</span>)<br>        plt.imshow(result)<br>        plt.axis(<span class="hljs-string">&#x27;off&#x27;</span>)<br>        plt.show()<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">colorize</span>(<span class="hljs-params">self</span>) -&gt; np.ndarray:<br>        <span class="hljs-comment"># 主函数</span><br>        <span class="hljs-comment"># 步骤1：预处理，转化为YUV空间和归一化</span><br>        self._preprocess()<br>        n, m = self.visual_clues.shape[<span class="hljs-number">0</span>], self.visual_clues.shape[<span class="hljs-number">1</span>]<br>        size = n * m<br>        <span class="hljs-comment"># 步骤2：构建系数矩阵</span><br>        <span class="hljs-comment"># 在构建线性方程时，由于Ax=b中A只由Y决定，所以在求解U和V时用的是同一个A</span><br>        W = sparse.lil_matrix((size, size), dtype=<span class="hljs-built_in">float</span>)<br>        b1 = np.zeros(shape=size)   <span class="hljs-comment"># 求解U时的右侧向量</span><br>        b2 = np.zeros(shape=size)   <span class="hljs-comment"># 求解V时的右侧向量</span><br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> tqdm(<span class="hljs-built_in">range</span>(n)):    <span class="hljs-comment"># tqdm是一个进度条，可以可视化的观察运行状态</span><br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(m):<br>                <span class="hljs-comment"># 鉴于最终上色效果考虑，应该把一些亮度高的区域保留不上色</span><br>                <span class="hljs-keyword">if</span> self.visual_clues[i, j, <span class="hljs-number">0</span>] &gt; <span class="hljs-number">1</span> - <span class="hljs-number">1e-3</span>:<br>                    <span class="hljs-built_in">id</span> = position_to_id(i, j, m)<br>                    W[<span class="hljs-built_in">id</span>, <span class="hljs-built_in">id</span>] = <span class="hljs-number">1</span><br>                    b1[<span class="hljs-built_in">id</span>] = self.gray_image[i, j, <span class="hljs-number">1</span>]<br>                    b2[<span class="hljs-built_in">id</span>] = self.gray_image[i, j, <span class="hljs-number">2</span>]<br>                    <span class="hljs-keyword">continue</span><br><br>                <span class="hljs-comment"># 将手动上色部分也保留</span><br>                <span class="hljs-keyword">if</span> <span class="hljs-built_in">abs</span>(self.gray_image[i, j, <span class="hljs-number">0</span>] - self.visual_clues[i, j, <span class="hljs-number">0</span>]) &gt; <span class="hljs-number">1e-2</span> <span class="hljs-keyword">or</span> \<br>                   <span class="hljs-built_in">abs</span>(self.gray_image[i, j, <span class="hljs-number">1</span>] - self.visual_clues[i, j, <span class="hljs-number">1</span>]) &gt; <span class="hljs-number">1e-2</span> <span class="hljs-keyword">or</span> \<br>                   <span class="hljs-built_in">abs</span>(self.gray_image[i, j, <span class="hljs-number">2</span>] - self.visual_clues[i, j, <span class="hljs-number">2</span>]) &gt; <span class="hljs-number">1e-2</span>:<br>                    <span class="hljs-built_in">id</span> = position_to_id(i, j, m)<br>                    W[<span class="hljs-built_in">id</span>, <span class="hljs-built_in">id</span>] = <span class="hljs-number">1</span><br>                    b1[<span class="hljs-built_in">id</span>] = self.visual_clues[i, j, <span class="hljs-number">1</span>]<br>                    b2[<span class="hljs-built_in">id</span>] = self.visual_clues[i, j, <span class="hljs-number">2</span>]<br>                    <span class="hljs-keyword">continue</span><br>                <span class="hljs-comment"># 剩下的像素根据周边像素的信息和相似度构建W和b矩阵</span><br>                Y = self.gray_image[i, j, <span class="hljs-number">0</span>]<br>                <span class="hljs-built_in">id</span> = position_to_id(i, j, m)<br>                neighbour = find_neighbour(i, j, n, m)<br>                Ys, ids, weights = [], [], []<br>                <span class="hljs-comment"># 求与周边像素的标准差</span><br>                <span class="hljs-keyword">for</span> pos <span class="hljs-keyword">in</span> neighbour:<br>                    Ys.append(self.gray_image[pos[<span class="hljs-number">0</span>], pos[<span class="hljs-number">1</span>], <span class="hljs-number">0</span>])<br>                    ids.append(position_to_id(pos[<span class="hljs-number">0</span>], pos[<span class="hljs-number">1</span>], m))<br>                sigma = np.std(Ys)<br>                <span class="hljs-built_in">sum</span> = <span class="hljs-number">0.</span><br>                <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(neighbour)):<br>                    <span class="hljs-keyword">if</span> sigma &gt; <span class="hljs-number">1e-3</span>:<br>                        w = np.exp(-<span class="hljs-number">1</span> * (Ys[k] - Y) * (Ys[k] - Y) / <span class="hljs-number">2</span> / sigma / sigma )<br>                        <span class="hljs-built_in">sum</span> += w<br>                        weights.append(w)<br>                    <span class="hljs-comment"># 防止出现除以0的错误</span><br>                    <span class="hljs-keyword">else</span>:<br>                        <span class="hljs-built_in">sum</span> += <span class="hljs-number">1.</span><br>                        weights.append(<span class="hljs-number">1.</span>)<br>                <span class="hljs-comment"># 让所有的相似度和为1</span><br>                <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(neighbour)):<br>                    weights[k] /= <span class="hljs-built_in">sum</span><br>                    W[<span class="hljs-built_in">id</span>, ids[k]] += -<span class="hljs-number">1</span> * weights[k]<br>                W[<span class="hljs-built_in">id</span>, <span class="hljs-built_in">id</span>] += <span class="hljs-number">1.</span><br>        <span class="hljs-comment"># 步骤3：求解线性方程</span><br>        result = np.zeros(shape=(n, m, <span class="hljs-number">3</span>))<br>        result[:, :, <span class="hljs-number">0</span>] = self.gray_image[:, :, <span class="hljs-number">0</span>]<br>        W = W.tocsc()<br>        u = spsolve(W, b1)<br>        v = spsolve(W, b2)<br>        <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>            <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(m):<br>                <span class="hljs-built_in">id</span> = position_to_id(i, j, m)<br>                result[i, j, <span class="hljs-number">1</span>], result[i, j, <span class="hljs-number">2</span>] = u[<span class="hljs-built_in">id</span>], v[<span class="hljs-built_in">id</span>]<br>        result = (np.clip(result, <span class="hljs-number">0.</span>, <span class="hljs-number">1.</span>) * <span class="hljs-number">255</span>).astype(np.uint8)<br>        cv2.imshow(<span class="hljs-string">&quot;Result&quot;</span>, result[:, :, <span class="hljs-number">1</span>])<br>        cv2.waitKey(<span class="hljs-number">0</span>)<br>        cv2.destroyAllWindows()<br>        result = cv2.cvtColor(result, cv2.COLOR_YUV2RGB)<br>        <span class="hljs-keyword">return</span> result<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">position_to_id</span>(<span class="hljs-params">x, y, m</span>):<br>    <span class="hljs-keyword">return</span> x * m + y<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">find_neighbour</span>(<span class="hljs-params">x, y, n, m, d=<span class="hljs-number">2</span></span>):<br>    neighbour = []<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, x - d), <span class="hljs-built_in">min</span>(n, x + d + <span class="hljs-number">1</span>)):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, y - d), <span class="hljs-built_in">min</span>(m, y + d + <span class="hljs-number">1</span>)):<br>            <span class="hljs-keyword">if</span> (i != x) <span class="hljs-keyword">or</span> (j != y):<br>                neighbour.append([i, j])<br>    <span class="hljs-keyword">return</span> neighbour<br><br>colorizer = Colorizer(<br>    gray_image_file=<span class="hljs-string">&quot;E:\\code\\Python\\opnecv\\colorization_data\\original\\example.png&quot;</span>,<br>    visual_clues_file=<span class="hljs-string">&quot;E:\\code\\Python\\opnecv\\colorization_data\\visual-clues\\example.png&quot;</span><br>)<br><br>colorizer.plot_inputs()<br><br>result = colorizer.colorize()<br><br>colorizer.plot_results(result)<br></code></pre></td></tr></table></figure>
+
+<p>复现过程中一路出现了很多的矩阵奇异性问题，迫使我也探索了很多关于稀疏矩阵计算的知识。也再一次次重构代码中优化了自己的代码风格，让逻辑更清晰，可以更好地发现存在的逻辑问题。</p>
+<h3 id="结果图片"><a href="#结果图片" class="headerlink" title="结果图片"></a>结果图片</h3><p><img src="https://i.imgs.ovh/2023/09/16/FREO.png" srcset="/img/loading.gif" lazyload alt="https://i.imgs.ovh/2023/09/16/FREO.png"></p>
+<h2 id="一些思考"><a href="#一些思考" class="headerlink" title="一些思考"></a>一些思考</h2><p>这篇论文和我前段时间看的《Poisson image editing》在实现逻辑上有相似的地方。两者都是通过一个最小化的最优化问题构建线性方程。</p>
+<p>但这篇文章的构建方法会略微复杂一点，因为他的已知量是分散在图像中的。如果说上一篇的实现方法是梯度场的引导，这篇文章的方法就是让已知颜色像素在U&#x2F;通道，根据相似度去自行生长发散。</p>
+<p>其中有一点我认为是这个方法比较关键的是计算相似度时的加权 ，加权之后似乎能更有效的保证分割结果的连贯性和有意义。但具体原理可能还是要等后面继续探索。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li>读源码学算法之Colorization <a target="_blank" rel="noopener" href="https://blog.csdn.net/u011426016/article/details/103427914">https://blog.csdn.net/u011426016/article/details/103427914</a></li>
+<li>【计算机图形学】基础 - Colorization using Optimization <a target="_blank" rel="noopener" href="https://blog.csdn.net/passer__jw767/article/details/126136158">https://blog.csdn.net/passer__jw767&#x2F;article&#x2F;details&#x2F;126136158</a></li>
+<li>《Colorization Using Optimization》论文理解与复现  <a target="_blank" rel="noopener" href="https://www.notion.so/Colorization-using-Optimization-0e050e35c74b4077a7eddde14c8b084a?pvs=21">https://www.cnblogs.com/3-louise-wang/p/16687822.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://dl.acm.org/doi/abs/10.1145/1186562.1015780">Colorization using optimization | ACM SIGGRAPH 2004 Papers</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Ouroboroz/Colorization">https://github.com/Ouroboroz/Colorization</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div></div>
+      <div>http://example.com/2023/09/30/《Colorization using Optimization》复现报告 0e050e35c74b4077a7eddde14c8b084a/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/30/hello-world/" title="Hello World">
+                        <span class="hidden-mobile">Hello World</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"8fTNb4BJNUwCRQnDhgONNVFn-9Nh9j0Va","appKey":"SSb6s5MIy7RoF7MAR6MGkKUB","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访客量
+        <span id="leancloud-site-pv"></span>
+        次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数
+        <span id="leancloud-site-uv"></span>
+        人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
