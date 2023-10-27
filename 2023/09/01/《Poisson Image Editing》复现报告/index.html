@@ -1,0 +1,778 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/nerv_icon.png">
+  <link rel="icon" href="/img/nerv_icon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#732D33">
+  <meta name="author" content="Amulopapa">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="这篇文章提出了一种通用的图像编辑机制，可以从中派生出无缝融合，纹理扁平化，局部色彩变化等工具。其核心的数学工具是带有Dirichlet边界条件的泊松偏微分方程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《Poisson image editing》复现报告">
+<meta property="og:url" content="http://example.com/2023/09/01/%E3%80%8APoisson%20Image%20Editing%E3%80%8B%E5%A4%8D%E7%8E%B0%E6%8A%A5%E5%91%8A/index.html">
+<meta property="og:site_name" content="Amulopapa&#39;s Blog">
+<meta property="og:description" content="这篇文章提出了一种通用的图像编辑机制，可以从中派生出无缝融合，纹理扁平化，局部色彩变化等工具。其核心的数学工具是带有Dirichlet边界条件的泊松偏微分方程">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-10-27T12:06:46.665Z">
+<meta property="article:author" content="Amulopapa">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="图形学">
+<meta property="article:tag" content="论文复现">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>《Poisson image editing》复现报告 - Amulopapa&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/KaTeX/0.16.2/katex.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"8fTNb4BJNUwCRQnDhgONNVFn-9Nh9j0Va","app_key":"SSb6s5MIy7RoF7MAR6MGkKUB","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Amulopapa</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/IMG_1106.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="《Poisson image editing》复现报告"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        Amulopapa
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-09-01 00:00" pubdate>
+          2023年9月1日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          63 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span>次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">《Poisson image editing》复现报告</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1>《Poisson image editing》复现报告</h1>
+<h1>论文复现：Poisson image editing</h1>
+<h2 id="论文介绍">论文介绍</h2>
+<p>图像编辑是一个涉及颜色校正，滤镜，变形和插入的任务。经典的做法一般会用滤波器调整图片细节或者直接的克隆工具进行完全的剪切和粘贴。一般来说用上述经典经典工具处理图像时，选定的编辑区域边缘会出现明显的接缝，随后会再通过羽化工具隐藏接缝。</p>
+<p>而这篇文章提出了一种通用的图像编辑机制，可以从中派生出无缝融合，纹理扁平化，局部色彩变化等工具。其核心的数学工具是带有Dirichlet边界条件的泊松偏微分方程。</p>
+<h2 id="原理解析">原理解析</h2>
+<p>对于图像融合而言我们着重满足的有以下两点：</p>
+<ul>
+<li>边缘过渡足够平滑，即梯度尽可能的小</li>
+<li>编辑区域的插入内容纹理得到最大程度保留</li>
+</ul>
+<p>根据以上需求可以提出一种导向插值的方法</p>
+<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.25em" columnalign="right left" columnspacing="0em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><munder><mrow><mi>min</mi><mo>⁡</mo></mrow><mi>f</mi></munder><msub><mo>∫</mo><mi mathvariant="normal">Ω</mi></msub><mi mathvariant="normal">∣</mi><mi mathvariant="normal">∇</mi><mi>f</mi><msup><mi mathvariant="normal">∣</mi><mn>2</mn></msup><mi>d</mi><mi>x</mi><mo>+</mo><msub><mo>∫</mo><mi mathvariant="normal">Ω</mi></msub><mi mathvariant="normal">∣</mi><mi mathvariant="normal">∇</mi><msup><mi>f</mi><mo lspace="0em" rspace="0em">∗</mo></msup><msup><mi mathvariant="normal">∣</mi><mn>2</mn></msup><mi>d</mi><mi>x</mi></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mrow></mrow><mtext> s.t. </mtext><mi>f</mi><mo>=</mo><msup><mi>f</mi><mo lspace="0em" rspace="0em">∗</mo></msup><mtext> on </mtext><mi mathvariant="normal">∂</mi><mi mathvariant="normal">Ω</mi></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{aligned} &amp; \min _{f} \int_{\Omega}|\nabla f|^{2} d x+\int_{\Omega}|\nabla f^{*}|^{2} d x \\ &amp; \text { s.t. } f=f^{*} \text { on } \partial \Omega \end{aligned}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:4.072em;vertical-align:-1.786em;"></span><span class="mord"><span class="mtable"><span class="col-align-r"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.286em;"><span style="top:-4.286em;"><span class="pstrut" style="height:3.36em;"></span><span class="mord"></span></span><span style="top:-2.234em;"><span class="pstrut" style="height:3.36em;"></span><span class="mord"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.786em;"><span></span></span></span></span></span><span class="col-align-l"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.286em;"><span style="top:-4.286em;"><span class="pstrut" style="height:3.36em;"></span><span class="mord"><span class="mord"></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.6679em;"><span style="top:-2.3479em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10764em;">f</span></span></span></span><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop">min</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8882em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mop"><span class="mop op-symbol large-op" style="margin-right:0.44445em;position:relative;top:-0.0011em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:-0.4336em;"><span style="top:-1.7881em;margin-left:-0.4445em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">Ω</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9119em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">∣∇</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord"><span class="mord">∣</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mord mathnormal">d</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mop"><span class="mop op-symbol large-op" style="margin-right:0.44445em;position:relative;top:-0.0011em;">∫</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:-0.4336em;"><span style="top:-1.7881em;margin-left:-0.4445em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">Ω</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9119em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord">∣∇</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7387em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mord"><span class="mord">∣</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8641em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mord mathnormal">d</span><span class="mord mathnormal">x</span></span></span><span style="top:-2.234em;"><span class="pstrut" style="height:3.36em;"></span><span class="mord"><span class="mord"></span><span class="mord text"><span class="mord"> s.t. </span></span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7387em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mord text"><span class="mord"> on </span></span><span class="mord" style="margin-right:0.05556em;">∂</span><span class="mord">Ω</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.786em;"><span></span></span></span></span></span></span></span></span></span></span></span></p>
+<p>V是引导梯度场，Ω是合并后被覆盖的区域，∂Ω是边界，Ω内的像素用f表示（f未知），Ω外的像素用f∗表示）（已知）</p>
+<p>其解是</p>
+<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo>△</mo><mi>f</mi><mo>=</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo stretchy="false">(</mo><mi>V</mi><mo stretchy="false">)</mo><mi>w</mi><mi>i</mi><mi>t</mi><mi>h</mi><mi>f</mi><msub><mi mathvariant="normal">∣</mi><mrow><mi mathvariant="normal">∂</mi><mi mathvariant="normal">Ω</mi></mrow></msub><mo>=</mo><msup><mi>f</mi><mo lspace="0em" rspace="0em">∗</mo></msup><msub><mi mathvariant="normal">∣</mi><mrow><mi mathvariant="normal">∂</mi><mi mathvariant="normal">Ω</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\bigtriangleup f=div(V) with f|_{\partial \Omega}=f^{*}|_{\partial \Omega}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">△</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.22222em;">V</span><span class="mclose">)</span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">h</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord"><span class="mord">∣</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight" style="margin-right:0.05556em;">∂</span><span class="mord mtight">Ω</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7387em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">∗</span></span></span></span></span></span></span></span></span><span class="mord"><span class="mord">∣</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight" style="margin-right:0.05556em;">∂</span><span class="mord mtight">Ω</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span></p>
+<p>具体在图像上，由于图像可以看作二元函数，而且xy都是离散的，因此我们可以用差分代替微分。所以可以用拉普拉斯卷积核来计算散度场。</p>
+<p class="katex-block "><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo fence="true">[</mo><mtable rowspacing="0.16em" columnalign="center center center" columnspacing="1em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>0</mn></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>1</mn></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>0</mn></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>1</mn></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mrow><mo>−</mo><mn>4</mn></mrow></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>1</mn></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>0</mn></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>1</mn></mstyle></mtd><mtd><mstyle scriptlevel="0" displaystyle="false"><mn>0</mn></mstyle></mtd></mtr></mtable><mo fence="true">]</mo></mrow><annotation encoding="application/x-tex">\begin{bmatrix}  0&amp; 1 &amp;0 \\  1&amp; -4 &amp; 1\\ 0 &amp; 1 &amp;0\end{bmatrix}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:3.6em;vertical-align:-1.55em;"></span><span class="minner"><span class="mopen"><span class="delimsizing mult"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.05em;"><span style="top:-4.05em;"><span class="pstrut" style="height:5.6em;"></span><span style="width:0.667em;height:3.600em;"><svg xmlns="http://www.w3.org/2000/svg" width='0.667em' height='3.600em' viewBox='0 0 667 3600'><path d='M403 1759 V84 H666 V0 H319 V1759 v0 v1759 h347 v-84
+H403z M403 1759 V0 H319 V1759 v0 v1759 h84z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.55em;"><span></span></span></span></span></span></span><span class="mord"><span class="mtable"><span class="col-align-c"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.05em;"><span style="top:-4.21em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">0</span></span></span><span style="top:-3.01em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span><span style="top:-1.81em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.55em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.05em;"><span style="top:-4.21em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span><span style="top:-3.01em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">−</span><span class="mord">4</span></span></span><span style="top:-1.81em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.55em;"><span></span></span></span></span></span><span class="arraycolsep" style="width:0.5em;"></span><span class="arraycolsep" style="width:0.5em;"></span><span class="col-align-c"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.05em;"><span style="top:-4.21em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">0</span></span></span><span style="top:-3.01em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">1</span></span></span><span style="top:-1.81em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.55em;"><span></span></span></span></span></span></span></span><span class="mclose"><span class="delimsizing mult"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:2.05em;"><span style="top:-4.05em;"><span class="pstrut" style="height:5.6em;"></span><span style="width:0.667em;height:3.600em;"><svg xmlns="http://www.w3.org/2000/svg" width='0.667em' height='3.600em' viewBox='0 0 667 3600'><path d='M347 1759 V0 H0 V84 H263 V1759 v0 v1759 H0 v84 H347z
+M347 1759 V0 H263 V1759 v0 v1759 h84z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.55em;"><span></span></span></span></span></span></span></span></span></span></span></span></p>
+<h2 id="代码复现">代码复现</h2>
+<p>无缝融合是泊松图像编辑最直观的应用，因此下文主要复现论文中提到的无缝融合功能，分为常规融合和混合融合两种。</p>
+<h3 id="复现思路">复现思路</h3>
+<ul>
+<li>求解融合后的像素值，需要构建系数矩阵A和向量b。然后利用Ax =b求解x向量。假设需要求解的像素个数为N，对每个矩阵建立一个索引。</li>
+<li>对于每个索引像素(x,y)的索引i，让A[i,i] = -4 , b[i] = div(x,y)</li>
+<li>检查每个像素上下左右是否都在mask内。如果有不在mask内则为边缘像素，不需要系数求解。</li>
+</ul>
+<h3 id="1-常规融合">1.常规融合</h3>
+<ul>
+<li>引导向量场V是源图像的梯度场，其中V含有源图像的纹理和亮度变化等信息</li>
+<li>为了无缝融合，待填补区域边缘与目标图像一致</li>
+<li>整体可以理解为根据边缘像素和引导向量场‘生长’出选区内像素</li>
+</ul>
+<p>SeamlessClone()</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> scipy.sparse <span class="hljs-keyword">import</span> linalg<br><span class="hljs-keyword">import</span> scipy.sparse<br><br><span class="hljs-comment"># 步骤1：读取源图像和目标图像，选择编辑区域</span><br>source_image_path = <span class="hljs-string">&quot;C:\\\\Users\\\\vc020\\\\Pictures\\\\Saved Pictures\\\\374041-Anime-Sunset-Phone-Wallpaper.jpg&quot;</span><br>target_image_path = <span class="hljs-string">&quot;C:\\\\Users\\\\vc020\\\\Pictures\\\\Saved Pictures\\\\wallhaven-rd8e2m.jpg&quot;</span><br><br><span class="hljs-comment"># 读取源图像和目标图像</span><br>source_image = cv2.imread(source_image_path)<br>target_image = cv2.imread(target_image_path)<br><br><span class="hljs-comment"># 创建窗口并设置回调函数</span><br>cv2.namedWindow(<span class="hljs-string">&quot;Source Image&quot;</span>)<br>cv2.setMouseCallback(<span class="hljs-string">&quot;Source Image&quot;</span>, draw_edit_area)<br><br><span class="hljs-comment"># 初始化变量</span><br>edit_points = []<br>drawing = <span class="hljs-literal">False</span><br><br><span class="hljs-comment"># 显示源图像</span><br>cv2.imshow(<span class="hljs-string">&quot;Source Image&quot;</span>, source_image)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br>source_image = cv2.imread(source_image_path)<br><br><span class="hljs-comment"># 步骤2：选择编辑区域</span><br><span class="hljs-comment"># 根据绘制的多边形创建源图像的掩膜</span><br>edit_mask = np.zeros(source_image.shape[:<span class="hljs-number">2</span>], dtype=np.uint8)<br>cv2.fillPoly(edit_mask, [np.array(edit_points)], color=<span class="hljs-number">255</span>)<br><br><span class="hljs-comment"># 显示生成的掩膜</span><br>cv2.imshow(<span class="hljs-string">&quot;Edit Mask&quot;</span>, edit_mask)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br><br><span class="hljs-comment"># 计算掩膜的范围</span><br><span class="hljs-built_in">print</span>(edit_points)<br>target_points = edit_points<br>target_points = np.array(target_points)<br>target_points[:, <span class="hljs-number">0</span>] += <span class="hljs-number">1200</span><br>target_points[:, <span class="hljs-number">1</span>] += <span class="hljs-number">370</span><br>target_points.tolist()<br><span class="hljs-built_in">print</span>(target_points)<br><br><span class="hljs-comment"># 根据源图像编辑区域的多边形顶点，在目标图像上创建新的掩膜</span><br>target_mask = np.zeros(target_image.shape[:<span class="hljs-number">2</span>], dtype=np.uint8)<br>cv2.fillPoly(target_mask, [target_points], color=<span class="hljs-number">255</span>)<br><br><span class="hljs-comment"># 显示生成的新目标图像掩膜</span><br>cv2.imshow(<span class="hljs-string">&quot;Target Mask&quot;</span>, target_mask)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br><br><span class="hljs-comment"># 步骤3：计算目标图像散度场</span><br><span class="hljs-comment"># 将目标图像分解为红绿蓝三个通道</span><br>target_b, target_g, target_r = cv2.split(target_image)<br><span class="hljs-comment"># 计算目标梯度场的散度</span><br>divergence_r_target = cv2.Laplacian(target_r,cv2.CV_64F)<br>divergence_g_target = cv2.Laplacian(target_g,cv2.CV_64F)<br>divergence_b_target = cv2.Laplacian(target_b,cv2.CV_64F)<br><br><span class="hljs-comment"># 步骤4：计算源图像的散度场</span><br><span class="hljs-comment"># 将源图像分解为红绿蓝三个通道</span><br>source_b, source_g, source_r = cv2.split(source_image)<br><span class="hljs-comment"># 计算源梯度场的散度</span><br>divergence_r = cv2.Laplacian(source_r,cv2.CV_64F)<br>divergence_g = cv2.Laplacian(source_g,cv2.CV_64F)<br>divergence_b = cv2.Laplacian(source_b,cv2.CV_64F)<br><br><span class="hljs-comment"># 在目标图像的编辑区域内，使用源图像的散度场替换目标图像的散度场</span><br>target_mask_indices = np.where(target_mask &gt; <span class="hljs-number">0</span>) <span class="hljs-comment"># 获取目标图像编辑区域的索引</span><br>mask_indices = np.where(edit_mask &gt; <span class="hljs-number">0</span>) <span class="hljs-comment"># 获取源图像编辑区域的索引</span><br>divergence_r_target[target_mask_indices] = divergence_r[mask_indices]<br>divergence_g_target[target_mask_indices] = divergence_g[mask_indices]<br>divergence_b_target[target_mask_indices] = divergence_b[mask_indices]<br><br>cv2.imshow(<span class="hljs-string">&quot;Fusion Divergence&quot;</span>, divergence_r_target)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br><br>result_r = getX(target_r, target_mask, divergence_r_target)<br>result_g = getX(target_g, target_mask, divergence_g_target)<br>result_b = getX(target_b, target_mask, divergence_b_target)<br><br>final = cv2.merge([result_b, result_g, result_r])<br>cv2.imwrite(<span class="hljs-string">&quot;E:\\\\code\\\\Python\\\\opnecv\\\\&quot;</span>+ <span class="hljs-string">&#x27;seamlessClone.jpg&#x27;</span>, final)<br>cv2.imshow(<span class="hljs-string">&quot;Result&quot;</span>, final)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br><br></code></pre></td></tr></table></figure>
+<p>draw_edit_area()函数（交互式在源图像上绘制编辑区域的回调函数）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">draw_edit_area</span>(<span class="hljs-params">event, x, y, flags, param</span>):<br>	<span class="hljs-keyword">global</span> edit_points, drawing<br><br>	<span class="hljs-keyword">if</span> event == cv2.EVENT_LBUTTONDOWN:<br>		drawing = <span class="hljs-literal">True</span><br>		edit_points.append((x, y))<br><br>	<span class="hljs-keyword">elif</span> event == cv2.EVENT_LBUTTONUP:<br>		drawing = <span class="hljs-literal">False</span><br>		cv2.polylines(source_image, [np.array(edit_points)], isClosed=<span class="hljs-literal">True</span>, color=(<span class="hljs-number">0</span>, <span class="hljs-number">240</span>, <span class="hljs-number">0</span>), thickness=<span class="hljs-number">1</span>)<br>		cv2.imshow(<span class="hljs-string">&quot;Source Image&quot;</span>, source_image)<br><br></code></pre></td></tr></table></figure>
+<p>getX()函数（构造和求解泊松方程）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">getX</span>(<span class="hljs-params">dst, mask, lap</span>): <span class="hljs-comment">#建立泊松方程并求解</span><br>	<span class="hljs-comment"># 1 计算求解的像素个数</span><br>	loc = np.nonzero(mask)<br>	num = loc[<span class="hljs-number">0</span>].shape[<span class="hljs-number">0</span>]<br>	<span class="hljs-comment"># 2. 有多少个像素个数则需要多少个方程，需要构造num*num大小的稀疏矩阵和num大小的b向量</span><br>	<span class="hljs-comment"># 3. A用lilmatrix，这种矩阵方便逐个添加</span><br>	A = scipy.sparse.lil_matrix((num, num), dtype=np.float64)<br>	b = np.ndarray((num,), dtype=np.float64) <span class="hljs-comment"># 一维数组,长度只有1, 而且最外层的长度为num</span><br>	<span class="hljs-comment"># 4. 要将每个像素映射到0~num-1的索引之中，因为A系数矩阵也是根据索引求构造的</span><br>	hhash = &#123;(x, y): i <span class="hljs-keyword">for</span> i, (x, y) <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(<span class="hljs-built_in">zip</span>(loc[<span class="hljs-number">0</span>], loc[<span class="hljs-number">1</span>]))&#125;<br>	<span class="hljs-comment"># 用于找上下左右四个像素位置</span><br>	dx = [<span class="hljs-number">1</span>, <span class="hljs-number">0</span>, -<span class="hljs-number">1</span>, <span class="hljs-number">0</span>]<br>	dy = [<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span>, -<span class="hljs-number">1</span>]<br>	<span class="hljs-comment"># 5. 构造A系数矩阵和b向量</span><br>	<span class="hljs-keyword">for</span> i, (x, y) <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(<span class="hljs-built_in">zip</span>(loc[<span class="hljs-number">0</span>], loc[<span class="hljs-number">1</span>])):<br>		A[i, i] = -<span class="hljs-number">4</span><br>		b[i] = lap[x, y]<br>		p = [(x + dx[j], y + dy[j]) <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">4</span>)] <span class="hljs-comment"># p为上下左右的像素位置</span><br>		<span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">4</span>):<br>			<span class="hljs-keyword">if</span> p[j] <span class="hljs-keyword">in</span> hhash: <span class="hljs-comment"># 像素位置在mask内</span><br>				A[i, hhash[p[j]]] = <span class="hljs-number">1</span><br>			<span class="hljs-keyword">else</span>:<br>				b[i] -= dst[p[j]]<br><br>	<span class="hljs-comment"># 由于A是稀疏矩阵，可以将lilmatrix转成cscmatrix，方便矩阵运算</span><br>	A = A.tocsc()<br>	<span class="hljs-comment"># 6. 求解X</span><br>	X = linalg.splu(A).solve(b)<br><br>	<span class="hljs-comment"># 7. 将X复制到对应位置</span><br>	result = np.copy(dst)<br>	<span class="hljs-keyword">for</span> i, (x, y) <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(<span class="hljs-built_in">zip</span>(loc[<span class="hljs-number">0</span>], loc[<span class="hljs-number">1</span>])):<br>		<span class="hljs-keyword">if</span> X[i] &lt; <span class="hljs-number">0</span>:<br>			X[i] = <span class="hljs-number">0</span><br>		<span class="hljs-keyword">if</span> X[i] &gt; <span class="hljs-number">255</span>:<br>			X[i] = <span class="hljs-number">255</span><br>	result[x, y] = X[i]<br>	<span class="hljs-keyword">return</span> result<br><br></code></pre></td></tr></table></figure>
+<h3 id="混合融合">混合融合</h3>
+<p>混合融合相比于常规融合，散度场并不是简单的区域替换，而是分方向通过比较源图像和目标图像的梯度场，选取绝对值较大的作为最终梯度。<br>
+然后再将四个方向的最终梯度场求和得最终的散度场。<br>
+Mixed seamlessClone</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> cv2<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">from</span> scipy.sparse <span class="hljs-keyword">import</span> linalg<br><span class="hljs-keyword">import</span> scipy.sparse<br><br><span class="hljs-comment"># 步骤1：读取源图像和目标图像</span><br>source_image_path = <span class="hljs-string">&quot;E:\\\\code\\\\Python\\\\opnecv\\\\wallhaven-ne26vk.jpg&quot;</span><br>target_image_path = <span class="hljs-string">&quot;E:\\\\code\\\\Python\\\\opnecv\\\\wallhaven-7p318v.jpg&quot;</span><br><br><span class="hljs-comment"># 读取源图像和目标图像</span><br>source_image = cv2.imread(source_image_path)<br>target_image = cv2.imread(target_image_path)<br><br><span class="hljs-comment"># 将源图像扩展至目标图像的大小</span><br>finalSrc = np.zeros_like(target_image)<br>finalSrc[<span class="hljs-number">456</span>:<span class="hljs-number">1656</span>, <span class="hljs-number">540</span>:<span class="hljs-number">2460</span>] = source_image<br><br>Src = np.zeros_like(target_image)<br>Src[:, :] = finalSrc<br><br><span class="hljs-comment"># 创建窗口并设置回调函数</span><br>cv2.namedWindow(<span class="hljs-string">&quot;Source Image&quot;</span>, cv2.WINDOW_FREERATIO)<br>cv2.namedWindow(<span class="hljs-string">&quot;Source Image&quot;</span>)<br>cv2.setMouseCallback(<span class="hljs-string">&quot;Source Image&quot;</span>, draw_edit_area)<br><br><span class="hljs-comment"># 初始化变量</span><br>edit_points = []<br>drawing = <span class="hljs-literal">False</span><br><br><span class="hljs-comment"># 显示源图像</span><br>cv2.imshow(<span class="hljs-string">&quot;Source Image&quot;</span>, finalSrc)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br>finalSrc = Src<br><br>cv2.namedWindow(<span class="hljs-string">&quot;src&quot;</span>, cv2.WINDOW_FREERATIO)<br>cv2.imshow(<span class="hljs-string">&quot;src&quot;</span>, Src)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br><br><span class="hljs-comment"># 步骤2：选择编辑区域</span><br><span class="hljs-comment"># 根据绘制的多边形创建图像的掩膜</span><br>edit_mask = np.zeros(finalSrc.shape[:<span class="hljs-number">2</span>], dtype=np.uint8)<br>cv2.fillPoly(edit_mask, [np.array(edit_points)], color=<span class="hljs-number">255</span>)<br><br><span class="hljs-comment"># 显示生成的掩膜</span><br>cv2.namedWindow(<span class="hljs-string">&quot;Edit Mask&quot;</span>, cv2.WINDOW_FREERATIO)<br>cv2.imshow(<span class="hljs-string">&quot;Edit Mask&quot;</span>, edit_mask)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br><br><span class="hljs-comment"># 步骤3：求融合散度</span><br>grad = []<br><span class="hljs-comment"># 创建四个方向的卷积核</span><br>kernel = [np.array([[<span class="hljs-number">0</span>, -<span class="hljs-number">1</span>, <span class="hljs-number">1</span>]]), np.array([[<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>, <span class="hljs-number">0</span>]]), np.array([[<span class="hljs-number">0</span>], [-<span class="hljs-number">1</span>], [<span class="hljs-number">1</span>]]), np.array([[<span class="hljs-number">1</span>], [-<span class="hljs-number">1</span>], [<span class="hljs-number">0</span>]])]<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">4</span>):<br>	srcGrad = cv2.filter2D(np.float64(finalSrc), -<span class="hljs-number">1</span>, kernel[i])<br>	dstGrad = cv2.filter2D(np.float64(target_image), -<span class="hljs-number">1</span>, kernel[i])<br>	grad.append(np.where(np.<span class="hljs-built_in">abs</span>(srcGrad) &gt; np.<span class="hljs-built_in">abs</span>(dstGrad), srcGrad, dstGrad))<br>	finalLap = np.<span class="hljs-built_in">sum</span>(grad, axis=<span class="hljs-number">0</span>)<br><br><span class="hljs-comment"># 步骤4：求解泊松方程</span><br>result = [getX(a, edit_mask, b) <span class="hljs-keyword">for</span> a, b <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(cv2.split(target_image), cv2.split(finalLap))]<br><br>final = cv2.merge(result)<br>cv2.imwrite(<span class="hljs-string">&quot;E:\\\\code\\\\Python\\\\opnecv\\\\&quot;</span>+ <span class="hljs-string">&#x27;mixed_seamlessClone.jpg&#x27;</span>, final)<br>cv2.namedWindow(<span class="hljs-string">&quot;Result&quot;</span>, cv2.WINDOW_FREERATIO)<br>cv2.imshow(<span class="hljs-string">&quot;Result&quot;</span>, final)<br>cv2.waitKey(<span class="hljs-number">0</span>)<br>cv2.destroyAllWindows()<br><br></code></pre></td></tr></table></figure>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Python/" class="print-no-link">#Python</a>
+      
+        <a href="/tags/%E5%9B%BE%E5%BD%A2%E5%AD%A6/" class="print-no-link">#图形学</a>
+      
+        <a href="/tags/%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0/" class="print-no-link">#论文复现</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>《Poisson image editing》复现报告</div>
+      <div>http://example.com/2023/09/01/《Poisson Image Editing》复现报告/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Amulopapa</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年9月1日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/09/16/%E3%80%8AColorization%20using%20Optimization%E3%80%8B%E5%A4%8D%E7%8E%B0%E6%8A%A5%E5%91%8A/" title="《Colorization using Optimization》复现报告">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">《Colorization using Optimization》复现报告</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"8fTNb4BJNUwCRQnDhgONNVFn-9Nh9j0Va","appKey":"SSb6s5MIy7RoF7MAR6MGkKUB","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访客量
+        <span id="leancloud-site-pv"></span>
+        次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数
+        <span id="leancloud-site-uv"></span>
+        人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
