@@ -1,2 +1,1 @@
-# Amulopapa67.github.io
-Homepage of RuiLin
+HomePage of RuiLin
