@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
       },
       base: '/',
       plugins: [react()],
-      assetsInclude: ['**/*.wav'],
+      assetsInclude: ['**/*.wav', '**/*.mp3', '**/*.ogg', '**/*.m4a'],
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)

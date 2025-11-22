@@ -1,6 +1,8 @@
-
 import { ResearchInterest, Publication, Project } from './types';
 import { Sparkles, BrainCircuit, Layers, Music } from 'lucide-react';
+
+// 添加基路径辅助函数
+const audio = (p: string) => `${import.meta.env.BASE_URL}${p}`;
 
 export const PERSONAL_INFO = {
   name: "Rui Lin",
@@ -75,9 +77,9 @@ export const PROJECTS: Project[] = [
     demoType: 'multi-view', 
     views: ['audio-separation', 'pareto-chart'],
     audioTracks: [
-        { id: 'mix', label: 'Mix', src: 'assets/duo_tok/duotok_mix_recon.wav' },
-        { id: 'vocal', label: 'Vocal', src: 'assets/duo_tok/duotok_vocal_recon.wav' },
-        { id: 'instr', label: 'Instr', src: 'assets/duo_tok/duotok_accompany_recon.wav' }
+        { id: 'mix', label: 'Mix', src: audio('assets/duo_tok/duotok_mix_recon.wav') },
+        { id: 'vocal', label: 'Vocal', src: audio('assets/duo_tok/duotok_vocal_recon.wav') },
+        { id: 'instr', label: 'Instr', src: audio('assets/duo_tok/duotok_accompany_recon.wav') }
     ],
     links: {
         paper: "#",
@@ -98,8 +100,8 @@ export const PROJECTS: Project[] = [
     ],
     demoType: 'audio-separation',
     audioTracks: [
-        { id: 'gt', label: 'Ground Truth', src: 'assets/xy_tokenizer/sa_tokenizer_gt.wav' },
-        { id: 'recon', label: 'Reconstructed', src: 'assets/xy_tokenizer/sa_tokenizer_recon.wav' }
+        { id: 'gt', label: 'Ground Truth', src: audio('assets/xy_tokenizer/sa_tokenizer_gt.wav') },
+        { id: 'recon', label: 'Reconstructed', src: audio('assets/xy_tokenizer/sa_tokenizer_recon.wav') }
     ]
   },
   {
