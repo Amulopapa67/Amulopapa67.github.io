@@ -27,10 +27,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
       
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       
       - name: Build project
-        run: npm run build
+        run: npx vite build
       
       - name: Deploy to GitHub Pages
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
