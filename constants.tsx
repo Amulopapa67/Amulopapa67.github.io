@@ -1,3 +1,4 @@
+
 import { ResearchInterest, Publication, Project } from './types';
 import { Sparkles, BrainCircuit, Layers, Music } from 'lucide-react';
 
@@ -10,7 +11,7 @@ export const PERSONAL_INFO = {
   githubUser: "Lipper",
   xiaohongshu: "https://www.xiaohongshu.com/user/profile/664edfe9000000000b0318a4",
   tagline: "Advancing music AI through disentangled audio representations and unified understanding-generation paradigms.",
-  about: "I am a researcher bridging the gap between rigid audio signals and flexible semantic understanding. My work focuses on Audio LLMs, fine-grained controllability, and making generative models editable through human-in-the-loop designs.",
+  about: "I am committed to building music AI systems that let anyone truly write, reshape, and play with music. My research on audio LLMs and music tokenizers focuses on high-fidelity yet controllable generation. Ultimately, I want music models to be both an accessible instrument for people without formal training and a creative partner that sparks new ideas for professional artists.",
   timeline: [
     {
       period: "2022 – Present",
@@ -31,30 +32,30 @@ export const RESEARCH_INTERESTS: ResearchInterest[] = [
   {
     id: '1',
     title: "Music Generation",
-    description: "Optimizing fundamental audio representations to enhance generation quality. Focusing on how better tokenization and codec strategies directly translate to higher fidelity and better structured music synthesis.",
+    description: "Designing music generators that operate on stronger audio representations. I study how codec and tokenization choices affect fidelity, structure, and controllability in long-form music synthesis.",
     icon: Sparkles,
     tags: ["Representation Optimization", "High-Fidelity Synthesis"]
   },
   {
     id: '2',
-    title: "Unified Understanding & Gen",
-    description: "Unifying comprehension and creation. Leveraging understanding tasks to inform generation, thereby significantly improving controllability, musical stability, and adherence to complex musical theory.",
+    title: "Unified Understanding & Generation",
+    description: "Building models that both understand and generate music. I use MIR-style understanding tasks to shape the representations used by generators, improving controllability, stability, and consistency with musical structure.",
     icon: BrainCircuit,
-    tags: ["Unified Models", "Task Unification", "Musical Stability"]
+    tags: ["Unified Models"]
   },
   {
     id: '3',
     title: "Semantic Audio Representation",
-    description: "Designing advanced self-supervised (SSL), unsupervised, and supervised learning frameworks to train robust, semantically-rich discrete and continuous audio representations.",
+    description: "Developing self-supervised, unsupervised, and supervised learning frameworks that produce robust, semantically rich discrete and continuous audio representations for downstream generation and analysis.",
     icon: Layers,
-    tags: ["SSL", "Task Construction", "Discrete/Continuous Reps"]
+    tags: ["SSL", "Task Construction", "Discrete & Continuous Reps"]
   },
   {
     id: '4',
     title: "Symbolic-Enhanced MIR",
-    description: "Integrating MIR tasks (chord recognition, transcription) and symbolic priors into the generation pipeline to enhance the robustness and theoretical grounding of neural music generation.",
+    description: "Combining MIR tasks (chord recognition, transcription, structure analysis) with symbolic priors to ground neural music models in music theory and improve the robustness of both understanding and generation.",
     icon: Music,
-    tags: ["Transcription", "Symbolic Priors", "Robustness"]
+    tags: ["Transcription", "Symbolic Conditioning"]
   }
 ];
 
@@ -64,19 +65,18 @@ export const PROJECTS: Project[] = [
     title: "DUO-TOK: Dual-Track Semantic Music Tokenizer for Vocal–Accompaniment Generation",
     role: "Lead Researcher",
     period: "Aug 2025 – Present",
-    description: "Duo-Tok is a source-aware dual-codebook tokenizer for vocal–accompaniment music that targets the growing tension between reconstruction quality and LM learnability. It follows a four-stage SSL-centered pipeline: pretraining a BEST-RQ–style encoder, stabilizing with Gaussian replacement noise and multi-task supervision, freezing the encoder to learn SimVQ-based dual codebooks with hard routing, and finally training latent diffusion decoders.",
+    description: "Duo-Tok is a source-aware dual-codebook tokenizer for vocal–accompaniment music that targets the tension between reconstruction quality and LM learnability. It follows a four-stage SSL-centered pipeline: (1) pretrain a BEST-RQ–style encoder on large-scale audio, (2) stabilize and factorize features with Gaussian replacement noise and multi-task supervision, (3) freeze the encoder and learn SimVQ-based dual codebooks with hard routing for vocals versus accompaniment, and (4) train latent diffusion decoders on the tokens for high-fidelity reconstruction.",
     highlights: [
-      "Source-aware dual-codebook training pipeline: SSL semantics first, source-specific quantization next, and high-fidelity decoding last.",
-      "Semantically decoupled, LM-friendly discrete codes via Gaussian Noise Injection and dual routed codebooks.",
-      "Semantic guardrails via multi-task supervision (MSS masks, ASR, Chroma, Mel).",
-      "Shifts the reconstruction–modeling Pareto frontier toward lower perplexity (4.75 PPL) at 0.75 kbps."
+      "Source-aware dual-codebook pipeline: SSL semantics first, source-specific quantization next, high-fidelity decoding last.",
+      "LM-friendly dual-track codes via Gaussian noise injection and routed SimVQ codebooks.",
+      "Multi-task 'semantic guardrails' (MSS masks, ASR head for lyric alignment, Mel & chroma reconstruction) to preserve musical structure while remaining separation-robust."
     ],
     demoType: 'multi-view', 
     views: ['audio-separation', 'pareto-chart'],
     audioTracks: [
-        { id: 'mix', label: 'Mix', src: '//duo_tok/duotok_mix_recon.wav' },
-        { id: 'vocal', label: 'Vocal', src: '//duo_tok/duotok_vocal_recon.wav' },
-        { id: 'instr', label: 'Instr', src: '//duo_tok/duotok_accompany_recon.wav' }
+        { id: 'mix', label: 'Mix', src: '/duo_tok/duotok_mix_recon.wav' },
+        { id: 'vocal', label: 'Vocal', src: '/duo_tok/duotok_vocal_recon.wav' },
+        { id: 'instr', label: 'Instr', src: '/duo_tok/duotok_accompany_recon.wav' }
     ],
     links: {
         paper: "#",
@@ -88,17 +88,16 @@ export const PROJECTS: Project[] = [
     title: "Acoustic–Semantic Disentanglement Codec",
     role: "Lead Researcher",
     period: "Jul 2025 – Present",
-    description: "A targeted enhancement framework for semantically rich tokenizers. Unlike simple dual-path methods, this approach supplements existing semantic encoders with a specific acoustic residual stream. We introduce a novel continuous AR Loss that enforces autoregressive consistency directly within the codebook dimension, ensuring mutual predictability between streams. This allows the use of large-capacity RVQ for high-fidelity acoustic details while maintaining excellent autoregressive performance for LM generation.",
+    description: "A targeted enhancement module for semantically rich tokenizers. Instead of using two symmetric paths, this design keeps a semantic encoder and adds a dedicated acoustic residual stream. A continuous AR loss ties the two streams together in code space, making acoustic codes predictable from semantic ones. This allows a large-capacity RVQ branch to capture fine acoustic detail while preserving strong autoregressive performance for LM-based generation.",
     highlights: [
-      "Targeted acoustic supplementation for existing semantic encoders.",
-      "Continuous AR Loss enforces codebook-level autoregressive mutual predictability.",
-      "Large-capacity RVQ captures fine details without compromising LM learnability.",
-      "Optimizes the balance between reconstruction fidelity and generative stability."
+      "Adds an acoustic residual stream on top of existing semantic tokenizers.",
+      "Continuous AR loss enforces codebook-level autoregressive consistency between semantic and acoustic streams.",
+      "Uses large-capacity RVQ to recover fine details without sacrificing LM learnability."
     ],
     demoType: 'audio-separation',
     audioTracks: [
-        { id: 'gt', label: 'Ground Truth', src: '//xy_tokenizer/sa_tokenizer_gt.wav' },
-        { id: 'recon', label: 'Reconstructed', src: '//xy_tokenizer/sa_tokenizer_recon.wav' }
+        { id: 'gt', label: 'Ground Truth', src: '/xy_tokenizer/sa_tokenizer_gt.wav' },
+        { id: 'recon', label: 'Reconstructed', src: '/xy_tokenizer/sa_tokenizer_recon.wav' }
     ]
   },
   {
@@ -106,10 +105,10 @@ export const PROJECTS: Project[] = [
     title: "Layer-wise Probing for SSL Encoders",
     role: "Interpretability Research",
     period: "Aug 2025",
-    description: "Comprehensive multi-layer probing across SSL backbones to locate layers capturing lyrics, melody, instrument, technique, and timbre/genre cues. Outputs deliver standardized reports and practical layer-selection guidance adopted by tokenizer variants.",
+    description: "Comprehensive multi-layer probing across SSL backbones to locate layers that capture lyrics, melody, instrument, technique, and timbre/genre cues. The resulting reports are used by tokenizer variants and MIR pipelines as practical layer-selection guidance.",
     highlights: [
-      "Locating layers capturing lyrics, melody, instrument, and timbre.",
-      "Enables fair cross-paradigm comparison and faster iteration."
+      "Locates layers capturing lyrics, melody, instruments, and timbre/genre.",
+      "Enables fair cross-paradigm comparison and faster tokenizer iteration."
     ],
     demoType: 'layer-probing'
   },
@@ -118,10 +117,10 @@ export const PROJECTS: Project[] = [
     title: "Fine-grained Temporal Alignment for Audio LLMs",
     role: "Independent",
     period: "Nov 2024 – Feb 2025",
-    description: "Time-aligned pairs constructed by combining time-stamped lyrics with synthetic chord/instrument labels to form MusicQA triples for temporal & structural grounding. Experiments validated multi-stage alignment feasibility and produced paired resources later reused for QA and analysis.",
+    description: "Time-aligned pairs built by combining time-stamped lyrics with synthetic chord and instrument labels to form MusicQA triples. Experiments validated multi-stage temporal alignment and produced reusable resources for QA and analysis.",
     highlights: [
-      "Combined time-stamped lyrics with synthetic chord/instrument labels.",
-      "Validated multi-stage alignment feasibility for Audio LLMs."
+      "Constructed lyric–chord–instrument triples with explicit time stamps.",
+      "Validated multi-stage temporal alignment feasibility for audio LLMs and released reusable resources internally."
     ],
     demoType: 'timeline'
   }
@@ -136,7 +135,7 @@ export const PUBLICATIONS: Publication[] = [
     year: "2026",
     status: "Under Review",
     tags: ["Reconstruction", "Perception"],
-    description: "Exploring perceptual losses to improve the auditory quality of neural audio codecs.",
+    description: "Explores perceptual losses to improve the auditory quality of neural audio codecs.",
     links: {
       pdf: "https://arxiv.org/abs/2509.14912",
       demo: "https://eps-acoustic-revolution-lab.github.io/EAR_VAE/"
