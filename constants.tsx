@@ -74,9 +74,9 @@ export const PROJECTS: Project[] = [
     demoType: 'multi-view', 
     views: ['audio-separation', 'pareto-chart'],
     audioTracks: [
-        { id: 'mix', label: 'Mix', src: '/assets/duo_tok/duotok_mix_recon.wav' },
-        { id: 'vocal', label: 'Vocal', src: '/assets/duo_tok/duotok_vocal_recon.wav' },
-        { id: 'instr', label: 'Instr', src: '/assets/duo_tok/duotok_accompany_recon.wav' }
+        { id: 'mix', label: 'Mix', src: '/public/duo_tok/duotok_mix_recon.wav' },
+        { id: 'vocal', label: 'Vocal', src: '/public/duo_tok/duotok_vocal_recon.wav' },
+        { id: 'instr', label: 'Instr', src: '/public/duo_tok/duotok_accompany_recon.wav' }
     ],
     links: {
         paper: "#",
