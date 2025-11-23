@@ -74,9 +74,9 @@ export const PROJECTS: Project[] = [
     demoType: 'multi-view', 
     views: ['audio-separation', 'pareto-chart'],
     audioTracks: [
-        { id: 'mix', label: 'Mix', src: '/public/duo_tok/duotok_mix_recon.wav' },
-        { id: 'vocal', label: 'Vocal', src: '/public/duo_tok/duotok_vocal_recon.wav' },
-        { id: 'instr', label: 'Instr', src: '/public/duo_tok/duotok_accompany_recon.wav' }
+        { id: 'mix', label: 'Mix', src: '//duo_tok/duotok_mix_recon.wav' },
+        { id: 'vocal', label: 'Vocal', src: '//duo_tok/duotok_vocal_recon.wav' },
+        { id: 'instr', label: 'Instr', src: '//duo_tok/duotok_accompany_recon.wav' }
     ],
     links: {
         paper: "#",
@@ -97,8 +97,8 @@ export const PROJECTS: Project[] = [
     ],
     demoType: 'audio-separation',
     audioTracks: [
-        { id: 'gt', label: 'Ground Truth', src: '/public/xy_tokenizer/sa_tokenizer_gt.wav' },
-        { id: 'recon', label: 'Reconstructed', src: '/public/xy_tokenizer/sa_tokenizer_recon.wav' }
+        { id: 'gt', label: 'Ground Truth', src: '//xy_tokenizer/sa_tokenizer_gt.wav' },
+        { id: 'recon', label: 'Reconstructed', src: '//xy_tokenizer/sa_tokenizer_recon.wav' }
     ]
   },
   {
