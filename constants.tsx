@@ -97,8 +97,8 @@ export const PROJECTS: Project[] = [
     ],
     demoType: 'audio-separation',
     audioTracks: [
-        { id: 'gt', label: 'Ground Truth', src: '/assets/xy_tokenizer/sa_tokenizer_gt.wav' },
-        { id: 'recon', label: 'Reconstructed', src: '/assets/xy_tokenizer/sa_tokenizer_recon.wav' }
+        { id: 'gt', label: 'Ground Truth', src: '/public/xy_tokenizer/sa_tokenizer_gt.wav' },
+        { id: 'recon', label: 'Reconstructed', src: '/public/xy_tokenizer/sa_tokenizer_recon.wav' }
     ]
   },
   {
