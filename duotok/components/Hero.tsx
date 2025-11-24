@@ -53,7 +53,7 @@ export const Hero: React.FC = () => {
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-lg font-medium text-gray-600 mb-16">
           <a href="https://github.com/Amulopapa67" className="hover:text-brand-accent transition-colors border-b border-transparent hover:border-brand-accent/30">Rui Lin</a>
           <a href="https://github.com/wuzhiyue111" className="hover:text-brand-accent transition-colors border-b border-transparent hover:border-brand-accent/30">Zhiyue Wu</a>
-          <a href="#" className="hover:text-brand-accent transition-colors border-b border-transparent hover:border-brand-accent/30">JiaHe Lei</a>
+          <a href="https://github.com/shwj114514" className="hover:text-brand-accent transition-colors border-b border-transparent hover:border-brand-accent/30">JiaHe Lei</a>
           <a href="https://github.com/DDDPG" className="hover:text-brand-accent transition-colors border-b border-transparent hover:border-brand-accent/30">Kangdi Wang</a>
           <a href="https://github.com/StravMeowsky" className="hover:text-brand-accent transition-colors border-b border-transparent hover:border-brand-accent/30">WeiXiong Chen</a>
           <a href="https://github.com/DaiJunYu-1995" className="hover:text-brand-accent transition-colors border-b border-transparent hover:border-brand-accent/30">Junyu Dai</a>
