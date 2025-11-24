@@ -80,7 +80,7 @@ export const PROJECTS: Project[] = [
     ],
     links: {
         paper: "#",
-        demo: "#"
+        demo: "/duotok/"
     }
   },
   {
