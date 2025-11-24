@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, Layers, Mic, Music, FileAudio, RotateCcw } from 'lucide-react';
 
@@ -157,7 +156,7 @@ export const AudioDemo: React.FC<AudioDemoProps> = ({ title, tracks }) => {
   const theme = getTheme();
 
   return (
-    <div className="w-full bg-white border border-gray-200 rounded-3xl p-6 shadow-soft transition-all duration-300 hover:shadow-lg">
+    <div className="w-full bg-white border border-gray-200 rounded-xl p-6 shadow-sm transition-all hover:shadow-md">
       
       {/* Header & Controls */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
@@ -237,12 +236,8 @@ export const AudioDemo: React.FC<AudioDemoProps> = ({ title, tracks }) => {
              {Math.floor(progress)}%
         </div>
       </div>
-      
-      {/* File Path Hint (For Developers/Demo purpose) */}
-      <div className="mt-4 pt-3 border-t border-gray-50 text-[10px] text-gray-400 font-mono truncate flex items-center gap-2">
-        <FileAudio size={10} />
-        <span className="opacity-70">src: {tracks.find(t => t.id === activeTrackId)?.src}</span>
-      </div>
     </div>
   );
 };
+
+export default AudioDemo;
