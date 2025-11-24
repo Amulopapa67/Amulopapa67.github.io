@@ -1,13 +1,11 @@
 {
-  "name": "duotok",
+  "name": "duo-tok-project-page",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && npm run build:duotok",
-    "build:duotok": "cd duotok && npm install && npm run build && mkdir -p ../dist/duotok && cp -r dist/* ../dist/duotok/",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
