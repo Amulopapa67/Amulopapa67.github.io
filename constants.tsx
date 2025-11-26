@@ -79,8 +79,8 @@ export const PROJECTS: Project[] = [
         { id: 'instr', label: 'Instr', src: '/duo_tok/duotok_accompany_recon.wav' }
     ],
     links: {
-        paper: "#",
-        demo: "/duotok/"
+        paper: "https://arxiv.org/abs/2511.20224",
+        demo: "https://eps-acoustic-revolution-lab.github.io/DUO_TOK/"
     }
   },
   {
@@ -151,7 +151,8 @@ export const PUBLICATIONS: Publication[] = [
     tags: ["Tokenization", "MSS", "Dual-Codebook"],
     description: "Source-aware dual-codebook tokenizer targeting the tension between reconstruction quality and LM learnability.",
     links: {
-      pdf: "#"
+      pdf: "https://arxiv.org/abs/2511.20224",
+      demo: "https://eps-acoustic-revolution-lab.github.io/DUO_TOK/"
     }
   },
   {
