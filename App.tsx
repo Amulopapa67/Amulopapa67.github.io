@@ -94,25 +94,25 @@ const App: React.FC = () => {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                             </span>
-                            Open for PhD Fall 2026
+                            {PERSONAL_INFO.status}
                         </div>
                         <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-black leading-[0.9]">
                             Rui Lin
                         </h1>
-                        <p className="text-xl md:text-2xl text-gray-500 font-medium max-w-lg leading-snug">
-                            Driving <span className="text-black">Next-Generation Music Generation</span> through Audio Intelligence.
+                        <p className="text-xl md:text-2xl text-gray-500 font-medium max-w-xl leading-snug">
+                            {PERSONAL_INFO.tagline}
                         </p>
                     </div>
 
                     {/* Timeline Mini-section */}
                     <div className="mt-8 border-t border-gray-100 pt-8">
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             {PERSONAL_INFO.timeline?.map((item, idx) => (
                                 <div key={idx} className="flex flex-col gap-1">
                                     <div className="text-xs text-gray-400 font-mono uppercase tracking-wider mb-1">{item.period}</div>
                                     <div className="font-bold text-gray-900">{item.org}</div>
                                     <div className="text-sm text-gray-500 flex items-center gap-1">
-                                        {idx === 0 ? <GraduationCap size={14}/> : <Building2 size={14}/>}
+                                        {item.type === 'education' ? <GraduationCap size={14}/> : <Building2 size={14}/>}
                                         {item.role}
                                     </div>
                                 </div>
@@ -132,7 +132,7 @@ const App: React.FC = () => {
                 <div className="flex-[2] bg-white rounded-[2.5rem] overflow-hidden shadow-sm relative border border-transparent hover:border-gray-200 transition-all group">
                     <div className="absolute top-6 left-6 z-10 bg-white/80 backdrop-blur px-4 py-1.5 rounded-full text-xs font-bold shadow-sm border border-gray-100 flex items-center gap-2">
                         <Activity size={14} className="text-accent"/>
-                        Current Focus: Audio Tokenization
+                        Current Focus: {PERSONAL_INFO.currentFocus}
                     </div>
                     <WaveformHero />
                 </div>
@@ -161,13 +161,19 @@ const App: React.FC = () => {
                 <p className="text-gray-800 leading-relaxed text-xl font-medium">
                     {PERSONAL_INFO.about}
                 </p>
+                <div className="mt-8 pt-6 border-t border-gray-100">
+                    <div className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Now</div>
+                    <p className="text-gray-600 leading-relaxed text-base">
+                        {PERSONAL_INFO.now}
+                    </p>
+                </div>
              </div>
              <div className="bg-white rounded-[2.5rem] p-10 shadow-sm flex flex-col justify-center gap-6 border border-transparent hover:border-gray-200 transition-all">
                 <div className="flex items-center gap-4 text-gray-700 group cursor-pointer">
                     <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors"><MapPin size={20} /></div>
                     <div>
                         <div className="text-xs text-gray-400 uppercase font-bold">Based in</div>
-                        <span className="font-medium text-lg">Shenzhen, China</span>
+                        <span className="font-medium text-lg">{PERSONAL_INFO.location}</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 text-gray-700 group cursor-pointer" onClick={() => window.open(`https://${PERSONAL_INFO.github}`, '_blank')}>
@@ -291,7 +297,7 @@ const App: React.FC = () => {
                             <div className="flex flex-wrap items-center gap-3 text-sm mb-4">
                                 <span className="font-medium text-black">{pub.venue}</span>
                                 <span className="text-gray-300">•</span>
-                                <span className={`font-medium ${pub.status === 'Published' ? 'text-green-600' : 'text-amber-600'}`}>{pub.status}</span>
+                                <span className={`font-medium ${['Published', 'Accepted'].includes(pub.status) ? 'text-green-600' : 'text-amber-600'}`}>{pub.status}</span>
                             </div>
                             
                             {/* Publication Links */}
@@ -332,12 +338,12 @@ const App: React.FC = () => {
                         <span className="font-bold text-lg tracking-tight">Rui Lin</span>
                     </div>
                     <div className="text-[10px] text-gray-400 font-mono uppercase tracking-widest">
-                        © 2025 Rui Lin • Built with React
+                        © 2026 Rui Lin • Built with React
                     </div>
                 </div>
 
                 <div className="flex flex-col items-center md:items-end text-center md:text-right">
-                    <p className="text-gray-900 font-bold text-2xl mb-1">Open for PhD Fall 2026</p>
+                    <p className="text-gray-900 font-bold text-2xl mb-1">{PERSONAL_INFO.footerStatus}</p>
                     <a href={`mailto:${PERSONAL_INFO.email}`} className="text-gray-500 hover:text-accent transition-colors font-medium">
                         {PERSONAL_INFO.email}
                     </a>

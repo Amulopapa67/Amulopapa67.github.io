@@ -1,6 +1,6 @@
 # 🎵 Rui Lin - Music AI Researcher Portfolio
 
-Welcome to my personal portfolio showcasing my research in music AI, audio representations, and generative models.
+Welcome to my personal portfolio showcasing my work in music representation, understanding, generation, and post-training.
 
 ## 🌐 Live Demo
 
@@ -8,22 +8,22 @@ Welcome to my personal portfolio showcasing my research in music AI, audio repre
 
 ## 📚 About
 
-I am a researcher bridging the gap between rigid audio signals and flexible semantic understanding. My work focuses on:
-- **Audio LLMs** - Leveraging language models for music understanding
-- **Fine-grained Controllability** - Making generative models editable and interpretable
-- **Disentangled Representations** - Decoupling semantic and acoustic information in audio
-- **Music Generation** - Creating high-fidelity, musically coherent content
+I am an incoming graduate student at the Music and Audio Computing Lab (MACLab), KAIST. My work focuses on:
+- **Music Representation & Tokenization** - Learning semantically rich, generation-friendly audio representations
+- **Controllable Music Generation** - Building coherent and creator-facing generative systems
+- **Unified Understanding & Generation** - Using musical understanding to improve generation
+- **Post-training for Music Models** - Exploring preference, reward, and evaluation-driven training signals
 
 ## 🔬 Research Projects
 
-### 1. DUO-TOK: Dual-Track Semantic Music Tokenizer
+### 1. DuoTok: Source-Aware Dual-Track Music Tokenization
 Source-aware dual-codebook tokenizer for vocal–accompaniment music generation
-- **Status**: Lead Researcher (Aug 2025 – Present)
+- **Status**: ACM Multimedia 2026 Oral · Lead Researcher
 - **Demo**: Listen to vocal/instrumental separation examples
 
 ### 2. Acoustic–Semantic Disentanglement Codec
 Targeted enhancement framework for semantically rich tokenizers
-- **Status**: Lead Researcher (Jul 2025 – Present)
+- **Status**: Lead Researcher (Jul 2025 – Jun 2026)
 - **Demo**: Compare original vs reconstructed audio
 
 ### 3. Layer-wise Probing for SSL Encoders
@@ -109,22 +109,23 @@ See [QUICK_START.md](./QUICK_START.md) for deployment instructions.
 
 - **Email**: linr3639@gmail.com
 - **GitHub**: [Amulopapa67](https://github.com/Amulopapa67)
-- **Location**: Shenzhen, China
+- **Location**: Daejeon, South Korea
 
 ## 📝 Recent Publications
 
-- **Back to Ear: Perceptually Driven High-Fidelity Music Reconstruction**
-  - ICASSP 2026 (Under Review)
-  - [arXiv](https://arxiv.org/abs/2509.14912)
+- **DuoTok: Source-Aware Dual-Track Music Tokenization for Vocal–Accompaniment Generation**
+  - ACM Multimedia 2026 (Oral)
+  - [arXiv](https://arxiv.org/abs/2511.20224)
 
-- **DUO-TOK: Dual-Track Semantic Music Tokenizer**
-  - 2025 Preprint
-  - Focus: Vocal–accompaniment generation with dual-codebook approach
+- **Back to Ear: Perceptually Driven High Fidelity Music Reconstruction**
+  - INTERSPEECH 2026 (Accepted)
+  - [arXiv](https://arxiv.org/abs/2509.14912)
 
 ## 🎓 Education
 
-- **B.Eng. Computer Science** - Shenzhen University (2022 – Present)
-- **Music Generation Researcher** - Initi AI (Jul 2025 – Present)
+- **Graduate Student** - Music and Audio Computing Lab, KAIST (Fall 2026 –)
+- **B.Eng. Computer Science** - Shenzhen University (2022 – 2026)
+- **Music Generation Researcher** - Initi AI (Jul 2025 – Jun 2026)
 
 ## 📄 License
 

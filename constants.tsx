@@ -4,26 +4,39 @@ import { Sparkles, BrainCircuit, Layers, Music } from 'lucide-react';
 
 export const PERSONAL_INFO = {
   name: "Rui Lin",
-  title: "Music AI Researcher",
+  title: "Music AI Researcher & Incoming KAIST Graduate Student",
   email: "linr3639@gmail.com",
-  location: "Shenzhen, China",
+  location: "Daejeon, South Korea",
   github: "github.com/Amulopapa67",
   githubUser: "Lipper",
   xiaohongshu: "https://www.xiaohongshu.com/user/profile/664edfe9000000000b0318a4",
-  tagline: "Advancing music AI through disentangled audio representations and unified understanding-generation paradigms.",
-  about: "I am committed to building music AI systems that let anyone truly write, reshape, and play with music. My research on audio LLMs and music tokenizers focuses on high-fidelity yet controllable generation. Ultimately, I want music models to be both an accessible instrument for people without formal training and a creative partner that sparks new ideas for professional artists.",
+  status: "Incoming @ KAIST MACLab · Fall 2026",
+  currentFocus: "Music Representation × Controllable Generation",
+  footerStatus: "Incoming Graduate Student @ KAIST MACLab",
+  tagline: "Building music AI systems that understand, represent, and generate music as a medium for human creativity.",
+  about: "I build music AI systems at the intersection of representation learning, music understanding, and generation. My current work explores how semantic audio representations, tokenization, and post-training signals can make music models more controllable, musically coherent, and useful to creators. Ultimately, I hope to build systems that let people write, reshape, and interact with music—serving both as accessible instruments for people without formal training and as creative partners for musicians.",
+  now: "I will join the Music and Audio Computing Lab (MACLab) at KAIST as a graduate student in Fall 2026. I am currently exploring post-training and preference learning for music generation, alongside open and creator-facing tools for understanding and manipulating musical structure.",
   timeline: [
     {
-      period: "2022 – Present",
-      role: "B.Eng. Computer Science",
-      org: "Shenzhen University",
+      period: "Fall 2026 –",
+      role: "Graduate Student",
+      org: "KAIST MACLab",
+      type: "education",
       current: true
     },
     {
-      period: "Jul 2025 – Present",
+      period: "Jul 2025 – Jun 2026",
       role: "Music Gen. Researcher",
       org: "Initi AI",
-      current: true
+      type: "work",
+      current: false
+    },
+    {
+      period: "2022 – 2026",
+      role: "B.Eng. Computer Science",
+      org: "Shenzhen University",
+      type: "education",
+      current: false
     }
   ]
 };
@@ -32,41 +45,42 @@ export const RESEARCH_INTERESTS: ResearchInterest[] = [
   {
     id: '1',
     title: "Music Generation",
-    description: "Designing music generators that operate on stronger audio representations. I study how codec and tokenization choices affect fidelity, structure, and controllability in long-form music synthesis.",
+    description: "Designing controllable music generators that preserve fidelity, musical structure, and long-range coherence.",
     icon: Sparkles,
-    tags: ["Representation Optimization", "High-Fidelity Synthesis"]
+    tags: ["Controllable Generation", "Long-Form Music"]
   },
   {
     id: '2',
-    title: "Unified Understanding & Generation",
-    description: "Building models that both understand and generate music. I use MIR-style understanding tasks to shape the representations used by generators, improving controllability, stability, and consistency with musical structure.",
-    icon: BrainCircuit,
-    tags: ["Unified Models"]
+    title: "Music Representation & Tokenization",
+    description: "Learning semantic audio representations and discrete tokens that remain expressive, source-aware, and friendly to generative models.",
+    icon: Layers,
+    tags: ["Tokenization", "Semantic–Acoustic Reps"]
   },
   {
     id: '3',
-    title: "Semantic Audio Representation",
-    description: "Developing self-supervised, unsupervised, and supervised learning frameworks that produce robust, semantically rich discrete and continuous audio representations for downstream generation and analysis.",
-    icon: Layers,
-    tags: ["SSL", "Task Construction", "Discrete & Continuous Reps"]
+    title: "Understanding & Generation",
+    description: "Using MIR-style understanding tasks to shape generative representations and ground models in musical structure and intent.",
+    icon: Music,
+    tags: ["MIR", "Unified Models"]
   },
   {
     id: '4',
-    title: "Symbolic-Enhanced MIR",
-    description: "Combining MIR tasks (chord recognition, transcription, structure analysis) with symbolic priors to ground neural music models in music theory and improve the robustness of both understanding and generation.",
-    icon: Music,
-    tags: ["Transcription", "Symbolic Conditioning"]
+    title: "Post-training for Music Models",
+    description: "Exploring preference learning, reward modeling, and evaluation-driven training signals for more useful and aligned music systems.",
+    icon: BrainCircuit,
+    tags: ["Preference Learning", "Reward & Evaluation"]
   }
 ];
 
 export const PROJECTS: Project[] = [
   {
     id: 'duotok',
-    title: "DUO-TOK: Dual-Track Semantic Music Tokenizer for Vocal–Accompaniment Generation",
+    title: "DuoTok: Source-Aware Dual-Track Music Tokenization for Vocal–Accompaniment Generation",
     role: "Lead Researcher",
-    period: "Aug 2025 – Present",
+    period: "Aug 2025 – 2026",
     description: "Duo-Tok is a source-aware dual-codebook tokenizer for vocal–accompaniment music that targets the tension between reconstruction quality and LM learnability. It follows a four-stage SSL-centered pipeline: (1) pretrain a BEST-RQ–style encoder on large-scale audio, (2) stabilize and factorize features with Gaussian replacement noise and multi-task supervision, (3) freeze the encoder and learn SimVQ-based dual codebooks with hard routing for vocals versus accompaniment, and (4) train latent diffusion decoders on the tokens for high-fidelity reconstruction.",
     highlights: [
+      "Accepted to ACM Multimedia 2026 as an Oral Presentation.",
       "Source-aware dual-codebook pipeline: SSL semantics first, source-specific quantization next, high-fidelity decoding last.",
       "LM-friendly dual-track codes via Gaussian noise injection and routed SimVQ codebooks.",
       "Multi-task 'semantic guardrails' (MSS masks, ASR head for lyric alignment, Mel & chroma reconstruction) to preserve musical structure while remaining separation-robust."
@@ -87,7 +101,7 @@ export const PROJECTS: Project[] = [
     id: 'codec',
     title: "Acoustic–Semantic Disentanglement Codec",
     role: "Lead Researcher",
-    period: "Jul 2025 – Present",
+    period: "Jul 2025 – Jun 2026",
     description: "A targeted enhancement module for semantically rich tokenizers. Instead of using two symmetric paths, this design keeps a semantic encoder and adds a dedicated acoustic residual stream. A continuous AR loss ties the two streams together in code space, making acoustic codes predictable from semantic ones. This allows a large-capacity RVQ branch to capture fine acoustic detail while preserving strong autoregressive performance for LM-based generation.",
     highlights: [
       "Adds an acoustic residual stream on top of existing semantic tokenizers.",
@@ -129,40 +143,30 @@ export const PROJECTS: Project[] = [
 export const PUBLICATIONS: Publication[] = [
   {
     id: 'p1',
-    title: "Back to Ear: Perceptually Driven High-Fidelity Music Reconstruction",
-    authors: ["Rui Lin (4th author)", "et al."],
-    venue: "ICASSP 2026",
-    year: "2026",
-    status: "Under Review",
-    tags: ["Reconstruction", "Perception"],
-    description: "Explores perceptual losses to improve the auditory quality of neural audio codecs.",
-    links: {
-      pdf: "https://arxiv.org/abs/2509.14912",
-      demo: "https://eps-acoustic-revolution-lab.github.io/EAR_VAE/"
-    }
-  },
-  {
-    id: 'p2',
-    title: "DUO-TOK: Dual-Track Semantic Music Tokenizer for Vocal–Accompaniment Generation",
+    title: "DuoTok: Source-Aware Dual-Track Music Tokenization for Vocal–Accompaniment Generation",
     authors: ["Rui Lin", "Zhiyue Wu", "JiaHe Lei", "Kangdi Wang", "WeiXiong Chen", "Junyu Dai", "Tao Jiang"],
-    venue: "arXiv",
-    year: "2025",
-    status: "Preprint",
+    venue: "ACM Multimedia 2026 (Oral)",
+    year: "2026",
+    status: "Accepted",
     tags: ["Tokenization", "MSS", "Dual-Codebook"],
-    description: "Source-aware dual-codebook tokenizer targeting the tension between reconstruction quality and LM learnability.",
+    description: "Source-aware dual-track tokenization targeting the tension between reconstruction quality and language-model learnability.",
     links: {
       pdf: "https://arxiv.org/abs/2511.20224",
       demo: "https://eps-acoustic-revolution-lab.github.io/DUO_TOK/"
     }
   },
   {
-    id: 'p3',
-    title: "Dual-Path Semantic–Acoustic Codec for Unified Model",
-    authors: ["Rui Lin", "et al."],
-    venue: "In Preparation",
-    year: "2025",
-    status: "In Preparation",
-    tags: ["Codec", "Unified Model"],
-    description: "Proposing the dual-stream architecture for better semantic control."
+    id: 'p2',
+    title: "Back to Ear: Perceptually Driven High Fidelity Music Reconstruction",
+    authors: ["Rui Lin (4th author)", "et al."],
+    venue: "INTERSPEECH 2026",
+    year: "2026",
+    status: "Accepted",
+    tags: ["Reconstruction", "Perception"],
+    description: "Explores perceptually driven objectives for high-fidelity music reconstruction.",
+    links: {
+      pdf: "https://arxiv.org/abs/2509.14912",
+      demo: "https://eps-acoustic-revolution-lab.github.io/EAR_VAE/"
+    }
   }
 ];

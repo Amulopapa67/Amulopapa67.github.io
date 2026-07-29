@@ -15,7 +15,7 @@ export interface Publication {
   authors: string[];
   venue: string;
   year: string;
-  status: 'Published' | 'Under Review' | 'In Preparation' | 'Preprint';
+  status: 'Published' | 'Accepted' | 'Under Review' | 'In Preparation' | 'Preprint';
   links?: {
     pdf?: string;
     code?: string;
